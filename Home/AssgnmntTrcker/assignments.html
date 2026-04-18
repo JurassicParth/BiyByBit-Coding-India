@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assignments | BitByBit Coding</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assignments.css">
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">BITBYBIT_CODING</a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/programs">Programs</a></li>
+      <li><a href="/assignments.html" class="active">Assignments</a></li>
+      <li><a href="https://wa.me/919901116718" target="_blank">Enquire</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-tag">STUDENT PORTAL</div>
+    <h1 class="page-title">Assignment<span>_</span>Tracker</h1>
+    <p class="page-subtitle">Select your grade to view upcoming, overdue, and submitted assignments.</p>
+  </div>
+
+  <div class="controls">
+    <span class="controls-label">GRADE //</span>
+    <div class="grade-pills" id="gradePills"></div>
+  </div>
+
+  <div class="stats-bar" id="statsBar"></div>
+
+  <div class="assignments-grid" id="assignmentsGrid"></div>
+
+  <div class="footer-note">
+    // assignments are updated by your instructor &nbsp;·&nbsp;
+    for queries, <a href="https://wa.me/919901116718" target="_blank">message on WhatsApp</a>
+  </div>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────────
+    //  ASSIGNMENT DATA — Edit this section to add/update assignments.
+    //  Fields:
+    //    subject: "Python" | "Java" | "C" | "WebDev" | "DSA" | "General"
+    //    title: string
+    //    desc: string (short description)
+    //    due: "DD Mon YYYY" (e.g. "25 Apr 2026")
+    //    status: "upcoming" | "overdue" | "submitted"
+    //    grades: array of grade numbers this applies to, e.g. [9, 10]
+    // ─────────────────────────────────────────────────────────────────
+    const assignments = [
+      {
+        subject: "Python",
+        title: "Variables & Data Types Exercise",
+        desc: "Complete the worksheet on integers, strings, floats, and type conversion.",
+        due: "22 Apr 2026",
+        status: "upcoming",
+        grades: [7, 8]
+      },
+      {
+        subject: "General",
+        title: "Number Systems — Binary & Hex",
+        desc: "Convert 10 decimal numbers to binary and hexadecimal. Show all working.",
+        due: "20 Apr 2026",
+        status: "overdue",
+        grades: [7, 8]
+      },
+      {
+        subject: "C",
+        title: "Loops Practice Sheet",
+        desc: "Write programs using for, while, and do-while loops as discussed in class.",
+        due: "25 Apr 2026",
+        status: "upcoming",
+        grades: [9, 10]
+      },
+      {
+        subject: "C",
+        title: "Arrays & Functions Assignment",
+        desc: "Implement three functions that operate on integer arrays — min, max, and reverse.",
+        due: "15 Apr 2026",
+        status: "submitted",
+        grades: [9, 10]
+      },
+      {
+        subject: "Python",
+        title: "Flowchart for Sorting Algorithm",
+        desc: "Draw the flowchart for Bubble Sort and write its pseudocode.",
+        due: "18 Apr 2026",
+        status: "submitted",
+        grades: [9, 10]
+      },
+      {
+        subject: "Java",
+        title: "OOP Concepts — Classes & Objects",
+        desc: "Create a class 'Student' with attributes and methods. Add a constructor and display method.",
+        due: "26 Apr 2026",
+        status: "upcoming",
+        grades: [11, 12]
+      },
+      {
+        subject: "DSA",
+        title: "Linked List Implementation",
+        desc: "Implement a singly linked list in C++ with insert, delete, and display operations.",
+        due: "19 Apr 2026",
+        status: "overdue",
+        grades: [11, 12]
+      },
+      {
+        subject: "WebDev",
+        title: "Responsive Portfolio Page",
+        desc: "Build a single-page portfolio using HTML and CSS. Must be mobile responsive.",
+        due: "30 Apr 2026",
+        status: "upcoming",
+        grades: [11, 12]
+      },
+      {
+        subject: "Python",
+        title: "File Handling Mini Project",
+        desc: "Write a program that reads a CSV file and prints statistics (count, average, max).",
+        due: "12 Apr 2026",
+        status: "submitted",
+        grades: [11, 12]
+      }
+    ];
+
+    // ── State
+    const grades = [7, 8, 9, 10, 11, 12];
+    let activeGrade = 9;
+
+    // ── Tag class map
+    const tagClass = {
+      Python: 'tag-python', Java: 'tag-java', C: 'tag-c',
+      WebDev: 'tag-webdev', DSA: 'tag-dsa', General: 'tag-general'
+    };
+
+    // ── Build grade pills
+    const pillsEl = document.getElementById('gradePills');
+    grades.forEach(g => {
+      const btn = document.createElement('button');
+      btn.className = 'grade-pill' + (g === activeGrade ? ' active' : '');
+      btn.textContent = 'Grade ' + g;
+      btn.onclick = () => { activeGrade = g; render(); };
+      pillsEl.appendChild(btn);
+    });
+
+    function render() {
+      // Update pills
+      document.querySelectorAll('.grade-pill').forEach((btn, i) => {
+        btn.classList.toggle('active', grades[i] === activeGrade);
+      });
+
+      const filtered = assignments.filter(a => a.grades.includes(activeGrade));
+
+      // Stats
+      const counts = { upcoming: 0, overdue: 0, submitted: 0 };
+      filtered.forEach(a => counts[a.status]++);
+      const statsEl = document.getElementById('statsBar');
+      statsEl.innerHTML = `
+        <div class="stat-chip"><span class="stat-dot dot-upcoming"></span><span class="stat-num">${counts.upcoming}</span> Upcoming</div>
+        <div class="stat-chip"><span class="stat-dot dot-overdue"></span><span class="stat-num">${counts.overdue}</span> Overdue</div>
+        <div class="stat-chip"><span class="stat-dot dot-submitted"></span><span class="stat-num">${counts.submitted}</span> Submitted</div>
+      `;
+
+      // Cards
+      const grid = document.getElementById('assignmentsGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><div class="empty-icon">[ ]</div><p>No assignments found for Grade ${activeGrade}.</p></div>`;
+        return;
+      }
+
+      // Sort: overdue first, then upcoming, then submitted
+      const order = { overdue: 0, upcoming: 1, submitted: 2 };
+      filtered.sort((a, b) => order[a.status] - order[b.status]);
+
+      grid.innerHTML = filtered.map((a, i) => `
+        <div class="card ${a.status}" style="animation-delay:${i * 0.05}s">
+          <div class="card-top">
+            <span class="subject-tag ${tagClass[a.subject] || 'tag-general'}">${a.subject}</span>
+            <span class="status-badge badge-${a.status}">${a.status.toUpperCase()}</span>
+          </div>
+          <div class="card-title">${a.title}</div>
+          <div class="card-desc">${a.desc}</div>
+          <div class="card-footer">
+            <span class="due-label">DUE DATE</span>
+            <span class="due-date">${a.due}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    render();
+  </script>
+</body>
+</html>
